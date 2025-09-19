@@ -1,0 +1,92 @@
+{% extends "layouts/main.html" %}
+
+{% block pageTitle %}
+  Check your answers template – {{ serviceName }} – GOV.UK Prototype Kit
+{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: "javascript:window.history.back()"
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+
+    <h1 class="govuk-heading-xl">Review your uploaded documents</h1>
+
+    <p>Please check that the documents you have uploaded are correct and complete.</p>
+
+    {% from "govuk/components/table/macro.njk" import govukTable %}
+
+    {% set uploadedDocs = data['uploadedDocs'] or {} %}
+    {% set docTypes = data['docTypes'] or [] %}
+
+    {% for type in docTypes %}
+      {% if uploadedDocs[type] and uploadedDocs[type].length > 0 %}
+
+        <h2 class="govuk-heading-m">{{ type }}</h2>
+        
+        {% if type == "Other" and data['otherDocument'] %}
+          <p class="govuk-body">Type of other document: {{ data['otherDocument'] }}</p>
+        {% endif %}
+
+        <table class="govuk-table">
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header">File name</th>
+              <th scope="col" class="govuk-table__header">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            {% for file in uploadedDocs[type] %}
+              <tr class="govuk-table__row">
+                <td class="govuk-table__cell">{{ file.filename }}</td>
+                <td class="govuk-table__cell">
+                  <a href="/residency/remove-upload?type={{ type | urlencode }}&index={{ loop.index0 }}&redirect=check-your-docs">Remove</a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        {% else %}
+
+        <h2 class="govuk-heading-m">{{ type }}</h2>
+        <p class="govuk-body">No files uploaded yet.</p>
+
+      {% endif %}
+
+      <p><a href="/residency/upload?type={{ type | urlencode }}">Add another {{ type | lower }}</a></p>
+    {% endfor %}
+
+    <form action="/residency/doc-types" method="post">
+      {{ govukButton({
+        text: "I want to change my document selection",
+        classes: "govuk-button govuk-button--secondary govuk-!-margin-top-5"
+      }) }}
+    </form>
+
+    <h2 class="govuk-heading-m govuk-!-margin-top-9">
+      Now send your application
+    </h2>
+
+    <p>
+      By submitting your evidence, you are confirming that, to the best of your knowledge, the details you are providing are correct.
+    </p>
+
+    <form action="/residency/confirmation" method="post" novalidate>
+
+      {{ govukButton({
+        text: "Accept and Submit Evidence"
+      }) }}
+
+    </form>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}

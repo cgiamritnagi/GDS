@@ -1,0 +1,171 @@
+{% extends "layouts/main.html" %}
+
+{% block pageTitle %}
+  Check your answers template – {{ serviceName }} – GOV.UK Prototype Kit
+{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: "javascript:window.history.back()"
+  }) }}
+{% endblock %}
+
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+
+      <h1 class="govuk-heading-xl">
+        Check your answers before sending your application
+      </h1>
+
+      {% set months = [ "", "January", "February", "March", "April", "May", "June", 
+           "July", "August", "September", "October", "November", "December" ]
+      %}
+
+      {{ govukSummaryList({
+        classes: "govuk-!-margin-bottom-9",
+        rows: [
+          {
+            key: {
+              text: "Name"
+            },
+            value: {
+              text: data['name']
+            },
+            actions: {
+              items: [
+                {
+                  href: "/grant/name",
+                  text: "Change",
+                  visuallyHiddenText: "name"
+                }
+              ]
+            }
+          },
+          {
+            key: {
+              text: "Date of birth"
+            },
+            value: {
+              text: data['dob-day'] + " " +
+                     months[data['dob-month'] | int] + " " +
+                     data['dob-year'] 
+            },
+            actions: {
+              items: [
+                {
+                  href: "/grant/date-of-birth",
+                  text: "Change",
+                  visuallyHiddenText: "date of birth"
+                }
+              ]
+            }
+          },
+          {
+            key: {
+              text: "National Insurance Number"
+            },
+            value: {
+              text: data['cleanedNi']
+            },
+            actions: {
+              items: [
+                {
+                  href: "/grant/ni",
+                  text: "Change",
+                  visuallyHiddenText: "National Insurance Number"
+                }
+              ]
+            }
+          },
+          {
+            key: {
+              text: "Address"
+            },
+            value: {
+              html: [
+                      data['addressLine1'],
+                      data['addressLine2'],
+                      data['addressTown'],
+                      data['addressCounty'],
+                      data['addressPostcode']
+                    ] | reject('equalto', '') | join('<br>')
+            },
+            actions: {
+              items: [
+                {
+                  href: "/grant/address",
+                  text: "Change",
+                  visuallyHiddenText: "address"
+                }
+              ]
+            }
+          },
+          {
+            key: {
+              text: "Bank details"
+            },
+            value: {
+               html:
+                '<b>Name:</b> ' + data['nameOnTheAccount'] + '<br>' +
+                '<b>Sort code:</b> ' + data['formattedSortCode'] + '<br>' +
+                '<b>Account number:</b> ' + data['accountNumber'] + '<br>' +
+                '<b>Roll number:</b> ' + data['rollNumber']
+            },
+            actions: {
+              items: [
+                {
+                  href: "/grant/bank-details",
+                  text: "Change",
+                  visuallyHiddenText: "contact details"
+                }
+              ]
+            }
+          }
+        ]
+      }) }}
+      
+      <form action="/grant/check-confirmation" method="post" novalidate>
+        {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+
+        {{ govukCheckboxes({
+          name: "confirmDetails",
+          fieldset: {
+            legend: {
+              text: "Do you confirm these details are correct",
+              isPageHeading: false,
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          items: [
+            {
+              value: "confirm",
+              text: "Yes"
+            }
+          ],
+          errorMessage: errors and errors[0] and { text: errors[0].text }
+        }) }}
+
+     
+      <h2 class="govuk-heading-m">
+        Now send your application
+      </h2>
+
+      <p>
+        By submitting this application you are confirming that, to the best of your knowledge, the details you are providing are correct.
+      </p>
+
+
+        {{ govukButton({
+          text: "Accept and send"
+        }) }}
+
+      </form>
+
+    </div>
+  </div>
+
+    <pre>{{ data | dump }}</pre>
+{% endblock %}

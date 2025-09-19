@@ -1,0 +1,109 @@
+{% extends "layouts/main.html" %}
+
+{% block pageTitle %}
+  Question page template – {{ serviceName }} – GOV.UK Prototype Kit
+{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+  text: "Back",
+  href: "javascript:window.history.back()"
+}) }}
+{% endblock %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <p class="govuk-caption-l govuk-!-padding-bottom-2">Step 5 of 5</p>
+      <form class="form" action="/grant/bank-details" method="post">
+
+        {% from "govuk/components/input/macro.njk" import govukInput %}
+
+        {% if errors and errors[0] %}
+          {{ govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: errors
+          }) }}
+        {% endif %}
+
+        <h1 class="govuk-heading-l">Enter your Bank or building society account details</h1>
+
+        {{ govukInput({
+          label: {
+            text: "Name on the account"
+          },
+          id: "nameOnTheAccount",
+          name: "nameOnTheAccount",
+           value: data['nameOnTheAccount'],
+          autocomplete: "name",
+          spellcheck: false,
+          errorMessage: (
+            errors and errors[0] and errors[0].text
+          ) and { text: errors[0].text }
+        }) }}
+
+        {{ govukInput({
+          label: {
+            text: "Sort code"
+          },
+          classes: "govuk-input--width-5 govuk-input--extra-letter-spacing",
+          hint: {
+            text: "Must be 6 digits long"
+          },
+          id: "sortCode",
+          name: "sortCode",
+          value: data['sortCode'],
+          inputmode: "numeric",
+          spellcheck: false,
+          errorMessage: (
+            errors and errors[1] and errors[1].text
+          ) and { text: errors[1].text }
+        }) }}
+
+        
+
+        {{ govukInput({
+          label: {
+            text: "Account number"
+          },
+          classes: "govuk-input--width-10 govuk-input--extra-letter-spacing",
+          hint: {
+            text: "Must be 8 digits long"
+          },
+          id: "accountNumber",
+          name: "accountNumber",
+          value: data['accountNumber'],
+          inputmode: "numeric",
+          spellcheck: false,
+          errorMessage: (
+            errors and errors[2] and errors[2].text
+          ) and { text: errors[2].text }
+        }) }}
+
+        {{ govukInput({
+          label: {
+            text: "Building society roll number (if you have one)"
+          },
+          classes: "govuk-input--width-10 govuk-input--extra-letter-spacing",
+          hint: {
+            text: "You can find it on your card, statement or passbook"
+          },
+          id: "roll-number",
+          name: "rollNumber",
+          value: data['rollNumber'],
+          spellcheck: false
+        }) }}
+
+        {{ govukButton({
+          text: "Continue"
+        }) }}
+
+
+      </form>
+
+    </div>
+  </div>
+  <pre>{{ data | dump }}</pre>
+    <pre>{{ errors | dump }}</pre>
+{% endblock %}

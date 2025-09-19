@@ -1,0 +1,135 @@
+{% extends "layouts/main.html" %}
+
+{% block pageTitle %}
+  Question page template – {{ serviceName }} – GOV.UK Prototype Kit
+{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+  text: "Back",
+  href: "javascript:window.history.back()"
+}) }}
+{% endblock %}
+
+{% block content %}
+
+
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      <h1 class="govuk-heading-l">
+       Upload your 
+        {% if data['type'] == "Other" and data['otherDocument'] %}
+          {{ data['otherDocument'] }}</p>
+          {% else %}
+          {{ data['type'] }}
+        {% endif %}
+      </h1>
+
+      <form class="form" action="/residency/upload" method="post">
+        <input type="hidden" name="docType" value="{{ data['type'] }}">
+
+        {% from "govuk/components/file-upload/macro.njk" import govukFileUpload %}
+
+        {{ govukFileUpload({
+          id: "file-upload",
+          name: "fileUpload",
+          label: {
+            text: "Upload a file"
+          }
+        }) }}
+
+        {{ govukButton({
+            text: "Upload"
+          }) }}
+
+      </form>
+
+      {% set uploads = data['uploadedDocs'] and data['uploadedDocs'][data['type']] %}
+      {% if uploads and uploads.length > 0 %}
+        <h2 class="govuk-heading-m">Uploaded files for {{ data['type'] }}</h2>
+
+        <table class="govuk-table">
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header">File name</th>
+              <th scope="col" class="govuk-table__header">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            {% for file in uploads %}
+              <tr class="govuk-table__row">
+                <td class="govuk-table__cell">{{ file.filename }}</td>
+                <td class="govuk-table__cell">
+                  <a href="/residency/remove-upload?type={{ type | urlencode }}&index={{ loop.index0 }}&redirect=check-your-docs">Remove</a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <form action="/residency/check-next-upload" method="post" class="govuk-!-margin-top-5">
+            {{ govukButton({
+              text: "I’ve finished uploading for this document type",
+              classes: "govuk-button govuk-button--secondary"
+            }) }}
+        </form>
+
+        </form>
+      {% endif %}
+
+    </div>
+
+    <div class="govuk-grid-column-one-third">
+
+        {% set selectedTypes = data['docTypes'] or [] %}
+        {% set uploadedDocs = data['uploadedDocs'] or {} %}
+        <table class="govuk-table">
+          <caption class="govuk-table__caption">Document Upload Progress</caption>
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header">Document type</th>
+              <th scope="col" class="govuk-table__header">Status</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+
+            {% for type in selectedTypes %}
+              <tr class="govuk-table__row">
+                <td class="govuk-table__cell">
+                  <a href="/residency/upload?type={{ type | urlencode }}">{{ type }}</a>
+                   {% if type == "Other" and data['otherDocument'] %}
+                    ({{ data['otherDocument'] }})        
+      </p>
+
+        {% endif %}
+                </td>
+                <td class="govuk-table__cell">
+                  {% if data['type'] == type %}
+                    <strong class="govuk-tag govuk-tag--blue">In progress</strong>
+                  {% elseif uploadedDocs[type] and uploadedDocs[type].length > 0 %}
+                    <strong class="govuk-tag govuk-tag--green">{{ uploadedDocs[type].length }} file(s) uploaded</strong>
+                  {% else %}
+                    <strong class="govuk-tag govuk-tag--grey">Not started</strong>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+
+          </tbody>
+        </table>
+
+        <form action="/residency/doc-types" method="post">
+        {{ govukButton({
+          text: "Change my evidence types",
+          classes: "govuk-button govuk-button--secondary"
+        }) }}
+      </form>
+
+    </div>
+</div>
+
+{% endblock %}
+
+

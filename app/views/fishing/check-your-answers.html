@@ -1,0 +1,117 @@
+{% extends "layouts/main.html" %}
+
+{% block pageTitle %}
+  Check your answers template – {{ serviceName }} – GOV.UK Prototype Kit
+{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: "javascript:window.history.back()"
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+
+      <h1 class="govuk-heading-xl">
+        Check your answers before sending your application
+      </h1>
+
+      {% set licenceMap = {
+        "1d": "1-day licence",
+        "8d": "8-day licence",
+        "12m": "12-month licence"
+      } %}
+
+      {% set locationMap = {
+        "england": "England",
+        "scotland": "Scotland",
+        "wales": "Wales",
+        "northern-ireland": "Northern Ireland"
+      } %}
+
+      {% set months = [ "", "January", "February", "March", "April", "May", "June", 
+           "July", "August", "September", "October", "November", "December" ]
+      %}
+
+      {{ govukSummaryList({
+        rows: [
+          {
+            key: {
+              text: "Type of licence"
+            },
+            value: {
+              text: licenceMap[data['typeOfLicence']] or data['typeOfLicence']
+            },
+            actions: {
+              items: [
+                {
+                  href: "/fishing/type-of-licence",
+                  text: "Change",
+                  visuallyHiddenText: "Question 1"
+                }
+              ]
+            }
+          }
+          ,
+          {
+            key: {
+              text: "Date of birth"
+            },
+            value: {
+              text: data['dob-day'] + " " +
+                     months[data['dob-month'] | int] + " " +
+                     data['dob-year']
+            },
+            actions: {
+              items: [
+                {
+                  href: "/fishing/date-of-birth",
+                  text: "Change",
+                  visuallyHiddenText: "Question 2"
+                }
+              ]
+            }
+          }
+          ,
+          {
+            key: {
+              text: "Where you live"
+            },
+            value: {
+              text: locationMap[data['whereDoYouLive']]
+            },
+            actions: {
+              items: [
+                {
+                  href: "/fishing/location",
+                  text: "Change",
+                  visuallyHiddenText: "Question 3"
+                }
+              ]
+            }
+          }
+        ]
+      }) }}
+
+      <h2 class="govuk-heading-m">
+        Now send your application
+      </h2>
+
+      <p>
+        By submitting this application you are confirming that, to the best of your knowledge, the details you are providing are correct.
+      </p>
+
+      <form action="/fishing/confirmation" method="post" novalidate>
+
+        {{ govukButton({
+          text: "Accept and send"
+        }) }}
+
+      </form>
+
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "layouts/main.html" %}
+
+{% block pageTitle %}
+  Question page template – {{ serviceName }} – GOV.UK Prototype Kit
+{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+  text: "Back",
+  href: "javascript:window.history.back()"
+}) }}
+{% endblock %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <p class="govuk-caption-l govuk-!-padding-bottom-2">Step 4 of 5</p>
+      <form class="form" action="/grant/ni" method="post">
+
+        {% from "govuk/components/input/macro.njk" import govukInput %}
+
+        {% if errors and errors[0] %}
+          {{ govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: errors
+          }) }}
+        {% endif %}
+
+        {{ govukInput({
+          label: {
+            text: "Enter your National Insurance number",
+            isPageHeading: true,
+            classes: "govuk-label--l"
+          },
+          hint: {
+            text: "It’s on your National Insurance card, benefit letter, payslip or P60 – for example, ‘QQ 12 34 56 C’"
+          },
+          classes: "govuk-input--width-10 govuk-input--extra-letter-spacing",
+          id: "national-insurance-number",
+          name: "nationalInsuranceNumber",
+          value: data['nationalInsuranceNumber'],
+          spellcheck: false,
+          errorMessage: errors and errors[0] and { text: errors[0].text }
+        }) }}
+
+        {{ govukButton({
+          text: "Continue"
+        }) }}
+
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}

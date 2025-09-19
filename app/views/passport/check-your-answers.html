@@ -1,0 +1,85 @@
+{% extends "layouts/main.html" %}
+
+{% block pageTitle %}
+  Check your answers template – {{ serviceName }} – GOV.UK Prototype Kit
+{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: "javascript:window.history.back()"
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+
+      <h1 class="govuk-heading-xl">
+        Check your answers before sending your report
+      </h1>
+
+      {% set rows = [
+        {
+          key: { text: "Your name" },
+          value: { text: data['name'] or "Not provided" },
+          actions: {
+            items: [
+              { href: "/passport/name", text: "Change", visuallyHiddenText: "Your name" }
+            ]
+          }
+        },
+        {
+          key: { text: "Passport number (if given)" },
+          value: { text: data['number'] or "Not provided" },
+          actions: {
+            items: [
+              { href: "/passport/number", text: "Change", visuallyHiddenText: "Passport number (if given)" }
+            ]
+          }
+        },
+        {
+          key: { text: "Where you lost it" },
+          value: { text: data['lostLocation'] or "Not provided" },
+          actions: {
+            items: [
+              { href: "/passport/lost-location", text: "Change", visuallyHiddenText: "Where was it lost?" }
+            ]
+          }
+        }
+      ] %}
+
+      {% if data['lostLocation'] == "Abroad" %}
+        {% set rows = rows.concat([{
+          key: { text: "Country" },
+          value: { text: data['lostCountry'] or "Not applicable" },
+          actions: {
+            items: [
+              { href: "/passport/lost-country", text: "Change", visuallyHiddenText: "Country" }
+            ]
+          }
+        }]) %}
+      {% endif %}
+
+      {{ govukSummaryList({ rows: rows }) }}
+    
+
+      <h2 class="govuk-heading-m">
+        Now submit your report
+      </h2>
+
+      <p>
+        By submitting this report you are confirming that, to the best of your knowledge, the details you are providing are correct.
+      </p>
+
+      <form action="/passport/confirmation" method="post" novalidate>
+
+        {{ govukButton({
+          text: "Accept and send"
+        }) }}
+
+      </form>
+
+    </div>
+  </div>
+{% endblock %}

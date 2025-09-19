@@ -1,0 +1,13 @@
+{
+  "files.associations": {
+    "*.html": "html",
+    "views/*.html": "njk" // this line is key
+  },
+  "[njk]": {
+    "editor.defaultFormatter": "ronnidc.nunjucks", // if you've got the extension
+    "editor.formatOnSave": true
+  },
+  "[html]": {
+    "editor.formatOnSave": false // disables Prettier wrecking your njk templates
+  }
+}

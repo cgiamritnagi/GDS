@@ -1,0 +1,83 @@
+{% extends "layouts/main.html" %}
+
+{% block pageTitle %}
+  Question page template – {{ serviceName }} – GOV.UK Prototype Kit
+{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+  text: "Back",
+  href: "javascript:window.history.back()"
+}) }}
+{% endblock %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      <form class="form" action="/residency/check-next-upload" method="post">
+
+      {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+
+      {{ govukCheckboxes({
+        name: "docTypes",
+        values: data['docTypes'],
+        fieldset: {
+          legend: {
+            text: "What documents do you have?",
+            isPageHeading: true,
+            classes: "govuk-fieldset__legend--l"
+          }
+        },
+        hint: {
+          text: "Select all that apply"
+        },
+        items: [
+          {
+            value: "Council tax bill",
+            text: "Council tax bill"
+          },
+          {
+            value: "Bank statement",
+            text: "Bank statement"
+          },
+          {
+            value: "Utility bill",
+            text: "Utility bill"
+          },
+          {
+            value: "Tenancy agreement",
+            text: "Tenancy agreement"
+          },
+          {
+            divider: "or"
+          },
+          {
+            value: "Other",
+            text: "Other",
+            conditional: {
+              html: govukInput({
+                id: "other-document",
+                name: "otherDocument",
+                value: data['otherDocument'] or "",
+                label: {
+                  text: "If other, specify document type"
+                }
+              })
+            }
+          }
+        ]
+      }) }}
+
+        {{ govukButton({
+          text: "Continue"
+        }) }}
+
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}
+
